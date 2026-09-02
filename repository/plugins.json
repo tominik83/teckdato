@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "plugins": [
+    {
+      "id": "radioon",
+      "name": "Radiooon",
+      "repository": "https://github.com/tominik83/teckdato-radioon",
+      "version": "1.0.0"
+    },
+    {
+      "id": "testoon",
+      "name": "Testoon",
+      "repository": "https://github.com/tominik83/teckdato-testoon",
+      "version": "1.0.0"
+    }
+  ]
+}
