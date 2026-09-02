@@ -1,0 +1,31 @@
+{
+    "id": "radioon",
+    "name": "RadioOn",
+    "version": "1.0.0",
+    "author": "Mihajlo",
+    "description": "Internet radio",
+    "enabled": true,
+    "main": "index.ts",
+    "icon": "radio",
+    "capabilities": [
+        "http",
+        "events",
+        "scheduler",
+        "websocket",
+        "sidebar",
+        "database",
+        "storage",
+        "components"
+    ],
+    "permissions": [
+        "network",
+        "database"
+    ],
+    "frontend": {
+        "route": "/radio",
+        "entry": "public/index.html"
+    },
+    "backend": {
+        "entry": "dist/index.js"
+    }
+}

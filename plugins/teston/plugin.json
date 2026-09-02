@@ -1,0 +1,34 @@
+{
+    "id": "teston",
+    "name": "TestOn",
+    "version": "1.0.0",
+    "author": "Mihajlo",
+    "description": "Test plugin",
+    "enabled": true,
+    "main": "index.ts",
+    "icon": "test",
+    "capabilities": [
+        "http",
+        "events",
+        "scheduler",
+        "websocket",
+        "sidebar",
+        "database",
+        "storage",
+        "server",
+        "components"
+    ],
+    "permissions": [
+        "network",
+        "database"
+    ],
+    "backend": {
+        "entry": "dist/index.js"
+    },
+    "props": {
+        "label": {
+            "type": "string",
+            "defaultValue": "Click me"
+        }
+    }
+}

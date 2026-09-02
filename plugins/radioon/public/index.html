@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RadioOn Plugin UI</title>
+  <link rel="stylesheet" href="index.css" />
+</head>
+
+<body>
+  <div class="shell">
+    <section class="panel">
+      <div class="row" style="justify-content: space-between; align-items: flex-start;">
+        <div>
+          <h1>RadioOn</h1>
+          <p>Paste any M3U URL or direct stream URL and keep playback active across the full Teckdato app.</p>
+        </div>
+        <span class="badge" id="status-badge">booting</span>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Custom Stream</h2>
+      <div class="field">
+        <span>Label</span>
+        <input id="stream-title" placeholder="My station" value="Custom radio" />
+      </div>
+      <div class="field" style="margin-top: 10px;">
+        <span>M3U or direct stream URL</span>
+        <textarea id="stream-url" placeholder="https://example.com/station.m3u"></textarea>
+      </div>
+      <div class="row" style="margin-top: 12px;">
+        <button id="play-custom" type="button">Play In Global Player</button>
+        <button id="stop-custom" class="secondary" type="button">Stop</button>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="row" style="justify-content: space-between; margin-bottom: 10px;">
+        <h2 style="margin: 0;">Known Stations</h2>
+        <button id="refresh-stations" class="secondary" type="button">Refresh</button>
+      </div>
+      <div class="stations" id="stations"></div>
+    </section>
+
+    <!-- <section class="panel">
+        <div class="row" style="justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+          <h2 style="margin: 0;">Player</h2>
+          <span class="badge" id="player-badge">idle</span>
+        </div>
+        <div class="player-card">
+          <div class="player-head">
+            <div>
+              <p class="muted" id="player-label">No stream selected</p>
+              <h3 id="player-title">RadioOn Player</h3>
+            </div>
+            <div class="player-status" id="player-status">Ready</div>
+          </div>
+          <div class="player-art" id="player-art">Live Radio</div>
+          <div class="player-meta" id="player-meta">Use the form above to play a stream.</div>
+          <div class="row" style="margin-top: 12px;">
+            <button id="player-play" type="button">Play</button>
+            <button id="player-stop" class="secondary" type="button">Stop</button>
+            <button id="player-popout" class="secondary" type="button">Pop-out</button>
+          </div>
+        </div>
+      </section> -->
+
+    <section class="panel player-panel">
+      <div class="row player-section-header">
+        <div>
+          <span class="section-kicker">LIVE PLAYER</span>
+          <h2>RadioOn Player</h2>
+        </div>
+        <span class="badge" id="player-badge">idle</span>
+      </div>
+
+      <div class="player-card">
+
+        <div class="player-glow"></div>
+
+        <div class="player-main">
+
+          <!-- Artwork -->
+          <div class="player-art-wrap">
+            <div class="player-art" id="player-art">
+              <div class="art-placeholder">
+                <span>♫</span>
+                <small>Live Radio</small>
+              </div>
+            </div>
+
+            <div class="live-indicator">
+              <span class="live-dot"></span>
+              <span>LIVE</span>
+            </div>
+          </div>
+
+          <!-- Information -->
+          <div class="player-info">
+
+            <div class="player-topline">
+              <div>
+                <p class="player-label" id="player-label">No stream selected</p>
+                <h3 id="player-title">RadioOn Player</h3>
+              </div>
+
+              <div class="player-status" id="player-status">
+                Ready
+              </div>
+            </div>
+
+            <div class="now-playing">
+
+              <div class="track-artist">
+                <span class="info-label">ARTIST</span>
+                <strong id="player-artist">Unknown Artist</strong>
+              </div>
+
+              <div class="track-name">
+                <span class="info-label">TRACK</span>
+                <strong id="player-track">No track information</strong>
+              </div>
+
+            </div>
+
+            <div class="station-info">
+
+              <div class="station-icon">◉</div>
+
+              <div>
+                <span class="info-label">STATION</span>
+                <strong id="player-station">RadioOn</strong>
+              </div>
+
+            </div>
+
+            <div class="player-stream">
+              <span class="stream-icon">⌁</span>
+              <span id="player-meta">Use the form above to play a stream.</span>
+            </div>
+
+            <div class="player-controls">
+
+              <button id="player-play" class="player-control primary" type="button">
+                <span class="control-icon">▶</span>
+                <span>Play</span>
+              </button>
+
+              <button id="player-stop" class="player-control secondary" type="button">
+                <span class="control-icon">■</span>
+                <span>Stop</span>
+              </button>
+
+              <button id="player-popout" class="player-control secondary" type="button">
+                <span class="control-icon">↗</span>
+                <span>Pop-out</span>
+              </button>
+
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- Metadata footer -->
+        <div class="player-footer">
+
+          <div class="metadata-item">
+            <span class="metadata-label">STATUS</span>
+            <strong id="player-live-status">Waiting</strong>
+          </div>
+
+          <div class="metadata-divider"></div>
+
+          <div class="metadata-item">
+            <span class="metadata-label">SOURCE</span>
+            <strong id="player-source">Radio stream</strong>
+          </div>
+
+          <div class="metadata-divider"></div>
+
+          <div class="metadata-item metadata-wide">
+            <span class="metadata-label">STREAM</span>
+            <strong id="player-stream-url">No stream selected</strong>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Runtime</h2>
+      <pre id="state">waiting for host context...</pre>
+    </section>
+  </div>
+
+  <script src="main.js"></script>
+
+</body>
+
+</html>

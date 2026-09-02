@@ -1,0 +1,79 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RadioOn Settings</title>
+  <style>
+    body { margin: 0; font-family: Segoe UI, sans-serif; background: #0b1220; color: #e2e8f0; }
+    .wrap { max-width: 920px; margin: 0 auto; padding: 20px; display: grid; gap: 14px; }
+    .card { border: 1px solid #1e293b; border-radius: 14px; background: #0f172a; padding: 16px; }
+    .field { display: grid; gap: 6px; margin-bottom: 12px; }
+    .row { display: flex; gap: 10px; flex-wrap: wrap; }
+    input, select, textarea, button { border-radius: 10px; border: 1px solid #334155; background: #111827; color: #e2e8f0; padding: 10px 12px; font: inherit; }
+    button { cursor: pointer; }
+    button.primary { background: #0284c7; border-color: #0284c7; color: #041118; font-weight: 700; }
+    pre { margin: 0; padding: 12px; border-radius: 10px; border: 1px solid #334155; background: #0b1324; overflow: auto; }
+    .muted { color: #93a4ba; font-size: 13px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="card">
+      <h1>RadioOn Settings</h1>
+      <p class="muted">Default playback profile plus real stream resolve probe via /radio/resolve-stream.</p>
+      <div class="row" style="margin-top:10px;">
+        <a href="./index.html"><button type="button">Open Radio App</button></a>
+        <button id="reload" type="button">Reload</button>
+        <button id="probe" type="button">Resolve Stream</button>
+      </div>
+    </section>
+    <section class="card">
+      <form id="settings-form">
+        <label class="field"><span>Default station name</span><input id="station" placeholder="Lofi FM" /></label>
+        <label class="field"><span>Default playlist URL</span><input id="playlist" placeholder="https://example.com/station.m3u" /></label>
+        <label class="field"><span>Autoplay</span><select id="autoplay"><option value="true">Enabled</option><option value="false">Disabled</option></select></label>
+        <label class="field"><span>Volume</span><input id="volume" type="number" min="0" max="100" step="1" /></label>
+        <div class="row">
+          <button class="primary" type="submit">Save Settings</button>
+          <button id="reset" type="button">Reset</button>
+        </div>
+      </form>
+    </section>
+    <section class="card"><pre id="state">loading...</pre></section>
+  </div>
+  <script>
+    const pluginId = "radioon";
+    const settingsKey = "settings";
+    const tokenKey = "teckdato.auth.token";
+    const defaults = { station: "RadioOn", playlistUrl: "", autoplay: true, volume: 85 };
+    const stateNode = document.getElementById("state");
+    function setState(value) { stateNode.textContent = JSON.stringify(value, null, 2); }
+    function auth() { try { return localStorage.getItem(tokenKey) || ""; } catch { return ""; } }
+    function headers() { const h = { "Content-Type": "application/json" }; const t = auth(); if (t) h.Authorization = `Bearer ${t}`; return h; }
+    async function req(path, method, body) {
+      const r = await fetch(path, { method, headers: headers(), body: body ? JSON.stringify(body) : undefined });
+      const txt = await r.text(); const payload = txt ? JSON.parse(txt) : null;
+      if (!r.ok) throw new Error(payload?.error || `Request failed (${r.status})`); return payload;
+    }
+    function readForm() {
+      return { station: String(document.getElementById("station").value || "").trim(), playlistUrl: String(document.getElementById("playlist").value || "").trim(), autoplay: document.getElementById("autoplay").value === "true", volume: Number(document.getElementById("volume").value || defaults.volume) };
+    }
+    function writeForm(v) {
+      const value = v && typeof v === "object" ? v : {};
+      document.getElementById("station").value = String(value.station || defaults.station);
+      document.getElementById("playlist").value = String(value.playlistUrl || defaults.playlistUrl);
+      document.getElementById("autoplay").value = String(typeof value.autoplay === "boolean" ? value.autoplay : defaults.autoplay);
+      document.getElementById("volume").value = String(Number(value.volume ?? defaults.volume));
+    }
+    async function loadSettings() { const data = await req(`/api/services/database/state/${pluginId}/${settingsKey}`, "GET"); writeForm(data?.value ?? defaults); setState({ source: "settings", data }); }
+    async function saveSettings() { const value = readForm(); await req(`/api/services/database/state/${pluginId}/${settingsKey}`, "PUT", { value }); setState({ source: "save", value }); }
+    async function probeStream() { const value = readForm(); const data = await req("/radio/resolve-stream", "POST", { url: value.playlistUrl }); setState({ source: "resolve", data }); }
+    document.getElementById("settings-form").addEventListener("submit", (e) => { e.preventDefault(); void saveSettings().catch((err) => setState({ error: String(err?.message || err) })); });
+    document.getElementById("reload").addEventListener("click", () => { void loadSettings().catch((err) => setState({ error: String(err?.message || err) })); });
+    document.getElementById("reset").addEventListener("click", () => { writeForm(defaults); setState({ source: "reset", defaults }); });
+    document.getElementById("probe").addEventListener("click", () => { void probeStream().catch((err) => setState({ error: String(err?.message || err) })); });
+    void loadSettings().catch((err) => setState({ error: String(err?.message || err) }));
+  </script>
+</body>
+</html>
